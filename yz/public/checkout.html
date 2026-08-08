@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تأكيد الطلب | يوسف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@300;400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="إتمام الطلب في متجر يوسف لمستلزمات العربيات — دفع عند الاستلام أو تحويل، وتوصيل لحد باب البيت." />
+  <link rel="canonical" href="/checkout.html" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/tokens.css">
+  <style>
+    *{box-sizing:border-box;}
+    body{
+      background:
+        radial-gradient(circle at 18% 12%, rgba(200, 121, 63,.12), transparent 24%),
+        radial-gradient(circle at 84% 8%, rgba(47, 111, 98,.08), transparent 20%),
+        linear-gradient(180deg,#07080b 0%,#0d1015 50%,#0b0d10 100%);
+      color:var(--text);font-family:'Tajawal',sans-serif;min-height:100vh;margin:0;line-height:1.6;
+    }
+    .container{max-width:1000px;margin:0 auto;padding:28px 20px 60px;}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:26px;box-shadow:0 20px 70px rgba(0,0,0,.35);margin-bottom:20px;}
+    h1{margin:0 0 4px;font-size:30px;font-weight:900;font-family:'Cairo',sans-serif;}
+    h2{margin:0 0 18px;font-size:18px;font-weight:800;font-family:'Cairo',sans-serif;}
+    .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin:0 0 6px;}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;}
+    .order-item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);}
+    .order-item:last-child{border-bottom:none;}
+    .order-item img{width:64px;height:64px;object-fit:cover;border-radius:14px;background:var(--panel-2);}
+    .order-item-info{flex:1;min-width:0;}
+    .order-item-name{font-weight:700;margin-bottom:2px;}
+    .order-item-info div{color:var(--muted);font-size:13.5px;}
+    .order-item-total{font-weight:800;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+    .form-grid{display:grid;gap:14px;}
+    label{font-size:13px;color:var(--muted);margin-bottom:2px;display:block;}
+    input,select,textarea,button{width:100%;font:inherit;border-radius:14px;border:1px solid var(--border);padding:14px 16px;background:#0f1218;color:var(--text);}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+    textarea{min-height:100px;resize:vertical;}
+    /* صندوق رفع إيصال التحويل (فودافون كاش / إنستاباي) */
+    .proof-box{background:rgba(200,121,63,.06);border:1px dashed var(--accent);border-radius:18px;padding:16px;}
+    .proof-title{font-weight:800;font-size:15px;font-family:'Cairo',sans-serif;margin-bottom:4px;}
+    .proof-title span{color:#e5483c;}
+    .proof-hint{font-size:13px;color:var(--muted);margin-bottom:12px;}
+    .proof-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .proof-actions button,.proof-actions .proof-btn{width:auto;padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer;min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'Cairo',sans-serif;font-size:14px;}
+    #proofPickBtn{border:none;background:linear-gradient(135deg,var(--accent),#e0a15c);color:#160a04;}
+    #proofCameraBtn{background:transparent;border:1px solid var(--accent);color:var(--accent);font-weight:700;}
+    #proofClearBtn{background:transparent;border:1px solid var(--border);color:var(--muted);font-weight:600;}
+    /* (إصلاح موبايل) الإدخال مخفي بصريًا بس موجود فعليًا في الصفحة — display:none
+       كان بيمنع بعض متصفحات الموبايل والتطبيقات (فيسبوك/انستجرام) من فتح المعرض. */
+    .proof-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+    .proof-note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.7;}
+    .proof-state{font-size:13px;color:var(--muted);}
+    .proof-state.ok{color:#3ecf8e;}
+    .proof-state.err{color:#e5483c;}
+    #proofPreview{display:none;margin-top:12px;max-width:190px;width:100%;border-radius:14px;border:1px solid var(--border);}
+    /* صندوق رقم الدفع: خلفية فاتحة والرقم نفسه بخط أسود واضح تمامًا */
+    #paymentNumberBox{background:#f7f2ec!important;border:1px solid #e7dccb!important;color:#000!important;}
+    #paymentNumberLabel{color:#5b4d3c!important;}
+    #paymentNumberValue{color:#000!important;font-weight:900;}
+    #copyPaymentNumberBtn{width:auto!important;background:transparent!important;color:var(--accent)!important;border:1px solid var(--accent)!important;}
+    #submitOrderBtn{background:linear-gradient(135deg,var(--accent),#e0a15c);color:#160a04;font-weight:900;cursor:pointer;border:none;font-size:16px;padding:16px;transition:transform .2s var(--ease), box-shadow .2s var(--ease);box-shadow:0 14px 30px rgba(200, 121, 63,.22);}
+    #submitOrderBtn:hover:not(:disabled){transform:translateY(-2px);}
+    #submitOrderBtn:disabled{opacity:.7;cursor:not-allowed;}
+    .status{margin-top:2px;padding:14px;border-radius:14px;background:rgba(229, 72, 60,.1);color:#ffb4a8;display:none;border:1px solid rgba(229, 72, 60,.25);font-size:14px;}
+    .status.show{display:block;}
+    .summary{display:grid;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:15px;}
+    .summary div{display:flex;justify-content:space-between;color:var(--muted);}
+    .summary strong{font-size:20px;color:var(--text);font-family:'JetBrains Mono',monospace;}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+    .link-back{color:var(--accent);display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:14px;}
+    .link-back svg{width:16px;height:16px;stroke:currentColor;}
+    .empty-note{padding:16px;border-radius:14px;background:rgba(255,255,255,.03);color:var(--muted);text-align:center;}
+    @media(max-width:900px){.grid{grid-template-columns:1fr;}}
+
+    /* success overlay */
+    .success-overlay{position:fixed;inset:0;background:rgba(5,6,8,.86);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+    .success-overlay.show{display:flex;}
+    .success-card{background:var(--panel);border:1px solid var(--border);border-radius:28px;padding:40px 32px;max-width:440px;width:100%;text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.5);animation:popIn .4s var(--ease);}
+    @keyframes popIn{from{opacity:0;transform:scale(.92) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+    .check-circle{width:84px;height:84px;border-radius:50%;background:rgba(62, 207, 142,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+    .check-circle svg{width:42px;height:42px;stroke:var(--emerald);}
+    .check-circle path{stroke-dasharray:48;stroke-dashoffset:48;animation:draw .5s .15s var(--ease) forwards;}
+    @keyframes draw{to{stroke-dashoffset:0;}}
+    .success-card h2{margin:0 0 8px;font-size:22px;}
+    .success-card p{color:var(--muted);margin:0 0 6px;font-size:14.5px;}
+    .order-num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:var(--accent);margin:14px 0 20px;}
+    .success-actions{display:grid;gap:10px;}
+    .success-actions a,.success-actions button{display:block;text-align:center;padding:14px;border-radius:14px;font-weight:800;text-decoration:none;cursor:pointer;border:none;font:inherit;}
+    .btn-home{background:linear-gradient(135deg,var(--accent),#e0a15c);color:#160a04;}
+    .btn-wa{background:rgba(62, 207, 142,.12);color:var(--emerald);border:1px solid rgba(62, 207, 142,.25) !important;}
+    .coupon-row{display:flex;gap:8px;margin-top:16px;}
+    .coupon-row input{flex:1;background:var(--panel-2, rgba(255,255,255,.04));border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;outline:none;}
+    .coupon-row input:focus{border-color:var(--accent);}
+    .coupon-row button{padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#e0a15c);color:#160a04;font-weight:800;cursor:pointer;white-space:nowrap;}
+    .coupon-row button:disabled{opacity:.6;cursor:default;}
+    .coupon-msg{font-size:13px;margin-top:8px;min-height:1px;}
+    .coupon-msg.ok{color:var(--emerald);}
+    .coupon-msg.err{color:var(--danger);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <p class="eyebrow">تأكيد الطلب</p>
+        <h1>راجع طلبك وأكّد الإرسال</h1>
+      </div>
+      <a class="link-back" href="/">العودة للمتجر <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>تفاصيل الطلب</h2>
+        <div id="orderReview"></div>
+        <div class="coupon-row">
+          <input id="couponInput" placeholder="كود الخصم (اختياري)" />
+          <button id="applyCouponBtn" type="button">تطبيق</button>
+        </div>
+        <div id="couponMsg" class="coupon-msg" role="status" aria-live="polite"></div>
+        <div class="summary">
+          <div><span>عدد المنتجات</span><span id="orderItemsCount">0</span></div>
+          <div id="couponDiscountRow" style="display:none"><span>الخصم<span id="couponCodeLabel"></span></span><span id="orderDiscountAmount" style="color:var(--emerald)">- 0 ج.م</span></div>
+          <div><span>الإجمالي</span><strong id="orderTotalAmount">0 ج.م</strong></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>بيانات الشحن والدفع</h2>
+        <form class="form-grid" id="orderForm" novalidate>
+          <div>
+            <label for="customerPhone">رقم الهاتف</label>
+            <input id="customerPhone" name="customerPhone" type="tel" inputmode="numeric" autocomplete="tel"
+                   required minlength="11" maxlength="11" pattern="01[0-9]{9}"
+                   title="رقم موبايل مصري مكوّن من 11 رقم يبدأ بـ 01" placeholder="01xxxxxxxxx" />
+          </div>
+          <div>
+            <label for="customerAddress">العنوان بالتفصيل</label>
+            <input id="customerAddress" name="customerAddress" type="text" autocomplete="street-address"
+                   required minlength="10" maxlength="300" placeholder="المدينة - الحي - الشارع" />
+          </div>
+          <div>
+            <label for="paymentMethod">طريقة الدفع</label>
+            <select id="paymentMethod">
+              <option value="cash-on-delivery">الدفع عند الاستلام</option>
+              <option value="vodafone-cash">فودافون كاش</option>
+              <option value="instapay">إينستاباي</option>
+              <option value="whatsapp">تأكيد عبر واتساب</option>
+            </select>
+          </div>
+          <div id="paymentNumberBox" style="display:none;background:#f7f2ec;border:1px solid #e7dccb;border-radius:10px;padding:12px 14px;margin-top:-6px">
+            <div style="font-size:13.5px;color:#6b5c48;margin-bottom:4px" id="paymentNumberLabel"></div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <strong id="paymentNumberValue" style="font-size:17px;letter-spacing:0.5px"></strong>
+              <button type="button" id="copyPaymentNumberBtn" style="border:1px solid #c8793f;background:#fff;color:#c8793f;border-radius:8px;padding:4px 10px;font-size:12.5px;cursor:pointer">نسخ الرقم</button>
+            </div>
+          </div>
+          <div class="proof-box" id="proofBox" style="display:none">
+            <div class="proof-title">صورة إيصال التحويل <span>*</span></div>
+            <div class="proof-hint" id="proofHint">بعد ما تحوّل، صوّر شاشة عملية التحويل وارفعها هنا عشان نقدر نأكد طلبك بسرعة.</div>
+            <input class="proof-file" type="file" id="proofInput" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
+            <input class="proof-file" type="file" id="proofCameraInput" accept="image/*" capture="environment" />
+            <div class="proof-actions">
+              <label class="proof-btn" id="proofPickBtn" for="proofInput">📁 اختر صورة من الموبايل</label>
+              <label class="proof-btn" id="proofCameraBtn" for="proofCameraInput">📷 التقاط بالكاميرا</label>
+              <button type="button" id="proofClearBtn" style="display:none">إزالة</button>
+              <span class="proof-state" id="proofState"></span>
+            </div>
+            <label for="transferRef" style="display:block;font-weight:700;font-size:13px;margin:14px 0 6px">رقم عملية التحويل <span style="color:#e5483c">*</span></label>
+            <input type="text" id="transferRef" name="transferRef" maxlength="40" inputmode="latin"
+                   placeholder="مثال: 8347120095"
+                   style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:transparent;color:inherit;font-family:'Cairo',sans-serif" />
+            <div class="proof-hint" style="margin:6px 0 0">اكتب رقم العملية اللي في رسالة التأكيد من المحفظة — بيخلينا نطابق التحويل ونأكد طلبك أسرع.</div>
+            <img id="proofPreview" alt="معاينة إيصال التحويل" />
+            <p class="proof-note">من الموبايل: اضغط «اختر صورة من الموبايل» واختار سكرين شوت التحويل من ألبوم الصور. لو الصورة مش راضية تترفع، خد سكرين شوت جديد (JPG/PNG) وجرّب تاني.</p>
+          </div>
+          <div>
+            <label for="customerNote">ملاحظة إضافية (اختياري)</label>
+            <textarea id="customerNote" placeholder="مثال: يفضل التوصيل مساءً"></textarea>
+          </div>
+          <div id="orderStatus" class="status"></div>
+          <button id="submitOrderBtn" type="submit">تأكيد وإرسال الطلب</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+      <div class="check-circle">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>تم تأكيد طلبك بنجاح!</h2>
+      <p>رقم طلبك هو</p>
+      <div class="order-num" id="successOrderId">#0</div>
+      <p id="successTotal"></p>
+      <div class="success-actions">
+        <a href="/" class="btn-home">الرجوع للمتجر</a>
+        <a href="#" id="successWaBtn" class="btn-wa" target="_blank" rel="noopener">تأكيد الطلب عبر واتساب</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/ui-utils.js"></script>
+  <script src="/csrf.js"></script>
+  <script>
+    let currentUser = null;
+    let lastItems = [];
+    let submitting = false;
+    let appliedCoupon = null;
+    let proofUrl = null;
+    const PROOF_METHODS = ['vodafone-cash', 'instapay'];
+
+    function api(path, options={}){ return fetch(path, { headers:{'Content-Type':'application/json'}, ...options }).then(async (res) => ({ res, data: await res.json().catch(() => ({})) })); }
+    async function loadUser(){
+      try {
+        const res = await api('/api/auth/me');
+        if (res.data.loggedIn) currentUser = res.data.user;
+      } catch (err) {}
+    }
+    // (إصلاح) الدوال المشتركة من ui-utils.js. النسخة القديمة كانت بترجع ''
+    // لأي رابط مش مطابق، فكانت الصور بتتكسر في أهم صفحة (الدفع). دلوقتي فيه
+    // صورة افتراضية دايمًا.
+    const { escapeHtml, safeImage, announce, formatEGP: fmt } = window.YousefUI;
+
+    function subtotalOf(items){ return items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0); }
+
+    function renderOrder(items){
+      const review = document.getElementById('orderReview');
+      if (!items.length) {
+        review.innerHTML = '<div class="empty-note">سلة الطلبات فارغة. ارجع للمتجر لإضافة منتجات.</div>';
+        document.getElementById('orderItemsCount').textContent = '0';
+        document.getElementById('orderTotalAmount').textContent = '0 ج.م';
+        document.getElementById('submitOrderBtn').disabled = true;
+        document.getElementById('couponDiscountRow').style.display = 'none';
+        return;
+      }
+      review.innerHTML = items.map(item => `
+        <div class="order-item">
+          <img src="${safeImage(item.image_url)}" width="64" height="64" loading="lazy" data-fallback="1" alt="${escapeHtml(item.name)}" />
+          <div class="order-item-info">
+            <div class="order-item-name">${escapeHtml(item.name)}</div>
+            <div>الكمية: ${Number(item.quantity)} × ${fmt(item.price)}</div>
+          </div>
+          <div class="order-item-total">${fmt(item.price * item.quantity)}</div>
+        </div>
+      `).join('');
+      document.getElementById('orderItemsCount').textContent = items.length;
+      renderTotals(items);
+    }
+
+    function renderTotals(items){
+      const subtotal = subtotalOf(items);
+      const discount = appliedCoupon ? appliedCoupon.discount : 0;
+      const discountRow = document.getElementById('couponDiscountRow');
+      if (appliedCoupon) {
+        discountRow.style.display = 'flex';
+        document.getElementById('couponCodeLabel').textContent = ` (${appliedCoupon.code})`;
+        document.getElementById('orderDiscountAmount').textContent = `- ${fmt(discount)}`;
+      } else {
+        discountRow.style.display = 'none';
+      }
+      document.getElementById('orderTotalAmount').textContent = fmt(Math.max(0, subtotal - discount));
+    }
+
+    async function applyCoupon(){
+      const input = document.getElementById('couponInput');
+      const msg = document.getElementById('couponMsg');
+      const code = input.value.trim();
+      msg.textContent = ''; msg.className = 'coupon-msg';
+      if (!code) { msg.textContent = 'اكتب كود الخصم أولاً'; msg.className = 'coupon-msg err'; return; }
+      if (!lastItems.length) { msg.textContent = 'السلة فارغة'; msg.className = 'coupon-msg err'; return; }
+      const btn = document.getElementById('applyCouponBtn');
+      btn.disabled = true; btn.textContent = 'جاري التحقق...';
+      try {
+        const { res, data } = await api('/api/coupons/validate', { method: 'POST', body: JSON.stringify({ code, subtotal: subtotalOf(lastItems) }) });
+        if (!res.ok || !data.valid) {
+          appliedCoupon = null;
+          msg.textContent = data.error || 'كود الخصم غير صالح';
+          msg.className = 'coupon-msg err';
+        } else {
+          appliedCoupon = data;
+          msg.textContent = `تم تطبيق الكوبون — وفرت ${fmt(data.discount)}`;
+          msg.className = 'coupon-msg ok';
+        }
+      } catch (err) {
+        msg.textContent = 'تعذر التحقق من الكوبون الآن';
+        msg.className = 'coupon-msg err';
+      }
+      btn.disabled = false; btn.textContent = 'تطبيق';
+      renderTotals(lastItems);
+    }
+    document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
+
+    function loadCartItems(){
+      let savedCart = {};
+      try { savedCart = JSON.parse(localStorage.getItem('yousefCart') || '{}'); } catch (e) {}
+      const cartIds = Object.keys(savedCart).map(Number).filter((id) => Number.isInteger(id) && id > 0);
+      if (!cartIds.length) return [];
+      // (7) نتجاهل أي كمية سالبة/صفر/غير صحيحة بدل إرسالها للسيرفر
+      return cartIds
+        .map(id => ({ id, quantity: Math.floor(Number(savedCart[id])) }))
+        .filter(entry => Number.isInteger(entry.quantity) && entry.quantity >= 1 && entry.quantity <= 999);
+    }
+
+    async function loadCheckout(){
+      await loadUser();
+      if (!currentUser) {
+        window.location.href = '/account.html?next=checkout.html';
+        return;
+      }
+      const cartItems = loadCartItems();
+      if (!cartItems.length) {
+        renderOrder([]);
+        return;
+      }
+      const productsRes = await api('/api/products');
+      const products = productsRes.data.products || [];
+      const items = cartItems.map(entry => {
+        const product = products.find(p => p.id === entry.id);
+        return product ? { ...product, quantity: entry.quantity } : null;
+      }).filter(Boolean);
+      lastItems = items;
+      renderOrder(items);
+      // (6) تنبيه مبكر لو كمية في السلة بقت أكبر من المخزون المتاح
+      const over = items.filter(item => item.quantity > Number(item.stock || 0));
+      if (over.length) {
+        showError('الكميات دي مش متاحة حاليًا: ' + over.map(i => `${i.name} (المتاح ${Number(i.stock || 0)})`).join('، ') + '. عدّل السلة قبل تأكيد الطلب.');
+      }
+      document.getElementById('customerPhone').value = currentUser.phone || '';
+      document.getElementById('customerAddress').value = currentUser.address || '';
+    }
+
+    function showError(msg){
+      const status = document.getElementById('orderStatus');
+      status.textContent = msg;
+      status.classList.add('show');
+    }
+    function hideError(){
+      document.getElementById('orderStatus').classList.remove('show');
+    }
+
+    async function submitOrder(){
+      if (submitting) return;
+      if (!lastItems.length) { showError('السلة فارغة، أضف منتجات قبل التأكيد.'); return; }
+
+      const payload = {
+        customerName: currentUser.name,
+        customerPhone: document.getElementById('customerPhone').value.trim(),
+        customerAddress: document.getElementById('customerAddress').value.trim(),
+        paymentMethod: document.getElementById('paymentMethod').value,
+        notes: document.getElementById('customerNote').value.trim(),
+        couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+        paymentProofUrl: proofUrl || undefined,
+        transferRef: (document.getElementById('transferRef')?.value || '').trim() || undefined,
+        items: lastItems.map(item => ({ productId: item.id, name: item.name, price: Number(item.price), quantity: item.quantity }))
+      };
+
+      // تحقق المتصفح الأصلي أولًا (يشتغل حتى لو الشرط اليدوي تحت اتغيّر)
+      const orderForm = document.getElementById('orderForm');
+      if (orderForm && !orderForm.checkValidity()) {
+        orderForm.reportValidity();
+        showError('من فضلك أكمل رقم الهاتف (11 رقم يبدأ بـ 01) والعنوان بالتفصيل.');
+        return;
+      }
+      if (!/^01[0-9]{9}$/.test(payload.customerPhone) || payload.customerAddress.length < 10) {
+        showError('من فضلك أكمل رقم الهاتف (11 رقم يبدأ بـ 01) والعنوان بالتفصيل.');
+        return;
+      }
+      if (PROOF_METHODS.includes(payload.paymentMethod) && !proofUrl) {
+        showError('طريقة الدفع دي محتاجة صورة إيصال التحويل — ارفع سكرين شوت التحويل الأول.');
+        document.getElementById('proofBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (PROOF_METHODS.includes(payload.paymentMethod) && !/^[0-9A-Za-z-]{6,40}$/.test(payload.transferRef || '')) {
+        showError('اكتب رقم عملية التحويل زي ما هو في رسالة المحفظة (٦ خانات على الأقل).');
+        document.getElementById('transferRef').focus();
+        return;
+      }
+
+      hideError();
+      submitting = true;
+      const btn = document.getElementById('submitOrderBtn');
+      const originalLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'جاري إرسال الطلب...';
+
+      try {
+        const res = await api('/api/orders', { method:'POST', body: JSON.stringify(payload) });
+        if (!res.res.ok || res.data.error) {
+          // (6) لو السبب نقص مخزون بنصلّح السلة ونعرض التفاصيل للعميل
+          if (res.data.code === 'INSUFFICIENT_STOCK' && Array.isArray(res.data.issues)) {
+            let savedCart = {};
+            try { savedCart = JSON.parse(localStorage.getItem('yousefCart') || '{}'); } catch (e) {}
+            res.data.issues.forEach((issue) => {
+              if (issue.available > 0) savedCart[issue.productId] = issue.available;
+              else delete savedCart[issue.productId];
+            });
+            try { localStorage.setItem('yousefCart', JSON.stringify(savedCart)); } catch (e) {}
+            showError((res.data.error || 'الكمية المطلوبة غير متاحة.') + ' — تم تعديل السلة للكميات المتاحة، راجعها وأكد الطلب.');
+            btn.disabled = false;
+            btn.textContent = originalLabel;
+            submitting = false;
+            appliedCoupon = null;
+            await loadCheckout();
+            return;
+          }
+          showError(res.data.error || 'حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.');
+          btn.disabled = false;
+          btn.textContent = originalLabel;
+          submitting = false;
+          return;
+        }
+        localStorage.removeItem('yousefCart');
+        localStorage.removeItem('yousefCartSummary');
+        showSuccess(res.data.orderId, res.data.totalAmount);
+      } catch (err) {
+        showError('تعذر الاتصال بالخادم. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.');
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+        submitting = false;
+      }
+    }
+
+    function showSuccess(orderId, totalAmount){
+      document.getElementById('successOrderId').textContent = `#${orderId}`;
+      document.getElementById('successTotal').textContent = totalAmount ? `بإجمالي ${fmt(totalAmount)}` : '';
+      const waMsg = `السلام عليكم، عايز أأكد طلبي رقم #${orderId} بإجمالي ${fmt(totalAmount || 0)}`;
+      document.getElementById('successWaBtn').href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+      document.getElementById('successOverlay').classList.add('show');
+    }
+
+    document.getElementById('orderForm').addEventListener('submit', (e) => { e.preventDefault(); submitOrder(); });
+
+    let SITE_SETTINGS = {};
+    async function loadPaymentSettings(){
+      try {
+        const { data } = await api('/api/site/settings');
+        SITE_SETTINGS = data.settings || {};
+      } catch (e) { SITE_SETTINGS = {}; }
+      updatePaymentNumberBox();
+    }
+    function updatePaymentNumberBox(){
+      const method = document.getElementById('paymentMethod').value;
+      const box = document.getElementById('paymentNumberBox');
+      const labelEl = document.getElementById('paymentNumberLabel');
+      const valueEl = document.getElementById('paymentNumberValue');
+      const map = {
+        'vodafone-cash': { label: 'حوّل قيمة الطلب على رقم فودافون كاش التالي:', number: SITE_SETTINGS.vodafoneCashNumber },
+        'instapay': { label: 'حوّل قيمة الطلب على رقم إنستاباي التالي:', number: SITE_SETTINGS.instapayNumber }
+      };
+      const info = map[method];
+      if (!info) { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      labelEl.textContent = info.label;
+      if (info.number) {
+        valueEl.textContent = info.number;
+        document.getElementById('copyPaymentNumberBtn').style.display = 'inline-block';
+      } else {
+        valueEl.textContent = 'تواصل معانا لتأكيد رقم الدفع قبل التحويل';
+        document.getElementById('copyPaymentNumberBtn').style.display = 'none';
+      }
+    }
+    function updateProofBox(){
+      const method = document.getElementById('paymentMethod').value;
+      const box = document.getElementById('proofBox');
+      const needed = PROOF_METHODS.includes(method);
+      box.style.display = needed ? 'block' : 'none';
+      document.getElementById('proofHint').textContent = method === 'instapay'
+        ? 'بعد ما تحوّل على إنستاباي، صوّر شاشة نجاح التحويل وارفع الصورة هنا عشان نأكد طلبك فورًا.'
+        : 'بعد ما تحوّل على فودافون كاش، صوّر رسالة/شاشة التحويل وارفع الصورة هنا عشان نأكد طلبك فورًا.';
+      if (!needed) clearProof();
+    }
+    function clearProof(){
+      proofUrl = null;
+      const refField = document.getElementById('transferRef');
+      if (refField) refField.value = '';
+      document.getElementById('proofInput').value = '';
+      document.getElementById('proofCameraInput').value = '';
+      document.getElementById('proofPreview').style.display = 'none';
+      document.getElementById('proofPreview').removeAttribute('src');
+      document.getElementById('proofClearBtn').style.display = 'none';
+      const st = document.getElementById('proofState'); st.textContent = ''; st.className = 'proof-state';
+    }
+    // (إصلاح) على الموبايل كان الزر بيفتح الكاميرا بس بسبب capture="environment"
+    // فمكانش ينفع تختار صورة من معرض الصور. دلوقتي فيه زر لكل حالة، والصورة
+    // بتتحوّل لـ JPEG/WEBP مضغوطة قبل الرفع عشان صور الآيفون (HEIC) وصور
+    // الكاميرا الكبيرة تنفع كلها.
+    async function normalizeProofImage(file){
+      const MAX_DIM = 1600;
+      try {
+        let bitmap;
+        if (window.createImageBitmap) {
+          bitmap = await createImageBitmap(file);
+        } else {
+          bitmap = await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = URL.createObjectURL(file);
+          });
+        }
+        const w0 = bitmap.width || bitmap.naturalWidth;
+        const h0 = bitmap.height || bitmap.naturalHeight;
+        const scale = Math.min(1, MAX_DIM / Math.max(w0, h0));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(w0 * scale);
+        canvas.height = Math.round(h0 * scale);
+        canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        if (!blob) return file;
+        const alreadyOk = ['image/jpeg','image/png','image/webp'].includes(String(file.type).toLowerCase());
+        if (alreadyOk && file.size <= blob.size && file.size <= 5 * 1024 * 1024) return file;
+        // أي صيغة تانية (HEIC من الآيفون، أو نوع مجهول من أندرويد) بتتحوّل هنا
+        // لـ JPEG عادي قبل الرفع.
+        return new File([blob], 'proof.jpg', { type: 'image/jpeg' });
+      } catch (_) {
+        return file;
+      }
+    }
+
+    // (إصلاح موبايل) الأزرار بقت <label for> عشان فتح المعرض يبقى إجراء أصلي من
+    // المتصفح — ده بيشتغل حتى جوه تطبيقات زي فيسبوك/انستجرام اللي بتمنع
+    // input.click() البرمجي على input مخفي بـ display:none.
+    document.getElementById('proofClearBtn').addEventListener('click', clearProof);
+
+    async function handleProofFile(file){
+      if (!file) return;
+      const state = document.getElementById('proofState');
+      state.className = 'proof-state';
+      const preview = document.getElementById('proofPreview');
+      // بعض أجهزة أندرويد بتبعت نوع فاضي أو application/octet-stream لصورة
+      // سليمة، فمش بنرفض غير الأنواع اللي أكيد مش صور (PDF مثلًا).
+      const type = String(file.type || '').toLowerCase();
+      if (type && !type.startsWith('image/') && type !== 'application/octet-stream') {
+        state.textContent = 'الملف المختار مش صورة — اختار سكرين شوت التحويل من ألبوم الصور.'; state.className = 'proof-state err';
+        clearProof(); return;
+      }
+      state.textContent = 'جاري تحضير الصورة...';
+      const ready = await normalizeProofImage(file);
+      if (ready.size > 5 * 1024 * 1024) {
+        state.textContent = 'حجم الصورة أكبر من 5 ميجابايت.'; state.className = 'proof-state err';
+        clearProof(); return;
+      }
+      if (preview.src && preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
+      preview.src = URL.createObjectURL(ready);
+      preview.style.display = 'block';
+      document.getElementById('proofClearBtn').style.display = 'inline-block';
+      state.textContent = 'جاري رفع الصورة...';
+      try {
+        const form = new FormData();
+        form.append('proof', ready, ready.name || 'proof.jpg');
+        const res = await fetch('/api/payment-proof', { method: 'POST', body: form });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          proofUrl = null;
+          state.textContent = 'لازم تسجّل الدخول الأول قبل رفع الإيصال.'; state.className = 'proof-state err';
+          return;
+        }
+        if (!res.ok || !data.url) {
+          state.textContent = data.error || 'تعذر رفع الصورة، حاول تاني.'; state.className = 'proof-state err';
+          proofUrl = null;
+          return;
+        }
+        proofUrl = data.url;
+        state.textContent = 'تم رفع الإيصال ✅';
+        state.className = 'proof-state ok';
+      } catch (err) {
+        proofUrl = null;
+        state.textContent = 'تعذر الاتصال بالخادم أثناء رفع الصورة.'; state.className = 'proof-state err';
+      }
+    }
+
+    ['proofInput','proofCameraInput'].forEach((id) => {
+      document.getElementById(id).addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        // بنفضّي القيمة الأول عشان اختيار نفس الصورة تاني يشتغل على الموبايل
+        // حتى لو حصل خطأ في المعالجة.
+        e.target.value = '';
+        await handleProofFile(file);
+      });
+    });
+    document.getElementById('paymentMethod').addEventListener('change', updateProofBox);
+    document.getElementById('paymentMethod').addEventListener('change', updatePaymentNumberBox);
+    document.getElementById('copyPaymentNumberBtn').addEventListener('click', async () => {
+      const number = document.getElementById('paymentNumberValue').textContent.trim();
+      const btn = document.getElementById('copyPaymentNumberBtn');
+      try {
+        await navigator.clipboard.writeText(number);
+        const original = btn.textContent;
+        btn.textContent = 'تم النسخ ✅';
+        setTimeout(() => { btn.textContent = original; }, 1800);
+      } catch (e) { /* بعض المتصفحات القديمة ما بتدعمش النسخ التلقائي */ }
+    });
+
+    loadCheckout();
+    loadPaymentSettings();
+    updateProofBox();
+  </script>
+</body>
+</html>

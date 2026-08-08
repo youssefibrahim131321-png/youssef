@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>حسابي | يوسف لمستلزمات العربيات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@300;400;500;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/tokens.css">
+  <style>
+    *{box-sizing:border-box;}
+    body{
+      margin:0;font-family:'Tajawal',sans-serif;color:var(--text);min-height:100vh;
+      display:grid;place-items:center;padding:24px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(200, 121, 63,.16), transparent 22%),
+        radial-gradient(circle at 82% 22%, rgba(47, 111, 98,.16), transparent 20%),
+        radial-gradient(circle at 50% 90%, rgba(62, 207, 142,.08), transparent 22%),
+        linear-gradient(180deg,#050609 0%,#0b0d15 55%,#0a0c12 100%);
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+      background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+      background-size:56px 56px;
+      mask-image:radial-gradient(circle at 50% 35%, black, transparent 72%);
+      -webkit-mask-image:radial-gradient(circle at 50% 35%, black, transparent 72%);
+    }
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);z-index:0;opacity:.5;animation:float 12s ease-in-out infinite alternate;}
+    .orb.o1{width:320px;height:320px;background:var(--gold);top:-90px;left:-70px;}
+    .orb.o2{width:280px;height:280px;background:var(--violet);bottom:-90px;right:-70px;animation-delay:2s;}
+    @keyframes float{ from{transform:translateY(0) scale(1);} to{transform:translateY(-22px) scale(1.05);} }
+
+    .card{
+      position:relative;z-index:1;width:min(460px,100%);
+      background:linear-gradient(180deg, rgba(22,25,38,.78), rgba(15,17,25,.86));
+      border:1px solid var(--line);border-radius:26px;padding:32px;
+      box-shadow:0 30px 90px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(20px);
+      animation:riseIn .6s var(--ease);
+    }
+    @keyframes riseIn{ from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+    .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+    .logo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(200, 121, 63,.28);flex-shrink:0;}
+    .logo-mark svg{width:20px;height:20px;stroke:#1a1206;}
+    .logo-row strong{font-size:16px;font-weight:900;font-family:'Cairo',sans-serif;}
+    h1{margin:0 0 6px;font-size:25px;font-weight:900;font-family:'Cairo',sans-serif;}
+    p.lead{color:var(--muted);margin:0 0 20px;font-size:14px;}
+    .tabs{display:flex;gap:8px;margin-bottom:20px;background:rgba(255,255,255,.03);padding:5px;border-radius:14px;border:1px solid var(--line);}
+    .tabs button{flex:1;padding:11px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-weight:700;font-size:14px;transition:all .2s var(--ease);}
+    .tabs button.active{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1206;box-shadow:0 8px 20px rgba(200, 121, 63,.25);}
+    form{display:grid;gap:14px;}
+    .hidden{display:none;}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px;}
+    input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font:inherit;background:rgba(255,255,255,.03);color:var(--text);outline:none;transition:border-color .2s,background .2s;}
+    input:focus{border-color:var(--gold);background:rgba(200, 121, 63,.06);}
+    button[type=submit]{
+      width:100%;padding:15px 16px;border-radius:14px;border:none;font:inherit;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1206;font-weight:800;
+      cursor:pointer;font-size:15.5px;box-shadow:0 16px 36px rgba(200, 121, 63,.28);
+      transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    button[type=submit]:hover{transform:translateY(-2px);box-shadow:0 20px 44px rgba(200, 121, 63,.36);}
+    .hint{color:var(--muted);font-size:12.5px;margin-top:2px;}
+    .status{margin-top:14px;padding:13px 14px;border-radius:14px;background:rgba(229, 72, 60,.1);color:#ffb4a8;border:1px solid rgba(229, 72, 60,.22);display:none;font-size:14px;}
+    .status.show{display:block;}
+    .status.ok{background:rgba(62, 207, 142,.1);color:#7fe8c9;border-color:rgba(62, 207, 142,.22);}
+    .back-link{display:block;text-align:center;margin-top:20px;color:var(--muted);font-size:13.5px;text-decoration:none;}
+    .back-link:hover{color:var(--text);}
+      #forgotLink{display:block;text-align:center;margin-top:14px;font-size:13.5px;color:inherit;opacity:.75;text-decoration:none;}
+    #forgotLink:hover{opacity:1;}
+    
+  </style>
+</head>
+<body>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="card">
+    <div class="logo-row">
+      <span class="logo-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M10 22V13a2 2 0 012-2h4a2 2 0 012 2v9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 22h12a2 2 0 002-2V13a2 2 0 00-2-2H14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <strong>يوسف لمستلزمات العربيات</strong>
+    </div>
+    <h1>أهلًا بيك</h1>
+    <p class="lead">سجّل دخولك أو أنشئ حساب جديد لمتابعة طلباتك واستلام إشعاراتها فور تأكيدها.</p>
+    <div id="googleBox" class="hidden" style="margin-bottom:14px;">
+      <div id="googleBtn" style="display:flex;justify-content:center;"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin:14px 0 4px;color:#94a3b8;font-size:13px;">
+        <span style="flex:1;height:1px;background:currentColor;opacity:.35;"></span>
+        أو بالبريد وكلمة المرور
+        <span style="flex:1;height:1px;background:currentColor;opacity:.35;"></span>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="active" data-tab="login" type="button">تسجيل دخول</button>
+      <button data-tab="register" type="button">إنشاء حساب</button>
+    </div>
+    <form id="loginForm">
+      <div>
+        <label for="loginEmail">البريد الإلكتروني</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com" required autocomplete="username" />
+      </div>
+      <div>
+        <label for="loginPassword">كلمة المرور</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <button type="submit">دخول</button>
+      <a id="forgotLink" href="/forgot-password.html">نسيت كلمة المرور؟</a>
+    </form>
+    <form id="registerForm" class="hidden">
+      <div>
+        <label for="registerName">الاسم</label>
+        <input id="registerName" placeholder="اسمك بالكامل" required />
+      </div>
+      <div>
+        <label for="registerEmail">البريد الإلكتروني</label>
+        <input id="registerEmail" type="email" placeholder="you@example.com" required autocomplete="username" />
+      </div>
+      <div>
+        <label for="registerPassword">كلمة المرور</label>
+        <input id="registerPassword" type="password" placeholder="6 أحرف على الأقل" required autocomplete="new-password" />
+      </div>
+      <button type="submit">إنشاء الحساب</button>
+    </form>
+    <div id="status" class="status" role="alert" aria-live="assertive"></div>
+    <a class="back-link" href="/">← العودة إلى المتجر</a>
+  </div>
+  <script src="/ui-utils.js"></script>
+  <script src="/csrf.js"></script>
+  <script src="/notify-client.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const hasNext = params.has('next');
+    // (أمان) ثغرة تحويل مفتوح: ?next= كان بيتحط في location.href زي ما هو،
+    // يعني رابط زي /account.html?next=https://evil.com كان بيرمي العميل على
+    // موقع تصيّد بعد تسجيل دخول ناجح. دلوقتي بنقبل المسارات الداخلية بس.
+    const nextUrl = window.YousefUI.safeInternalPath(params.get('next'), '/dashboard.html');
+    // (12) لو المستخدم مسجّل دخول بالفعل، مانرجعوش للصفحة الرئيسية «كأن الموقع رستر».
+    // بنوديه للوحة حسابه، إلا لو جاي من صفحة معيّنة (?next=) فبنكمّل رحلته.
+    (async function redirectIfLoggedIn(){
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (data.loggedIn) window.location.href = hasNext ? nextUrl : '/dashboard.html';
+      } catch (e) {}
+    })();
+    // (جديد) الدخول بحساب جوجل: جوجل هي اللي بتتحقق من ملكية البريد،
+    // فمفيش كود ولا رابط تفعيل، ومستحيل يتسجّل بريد وهمي.
+    window.handleGoogleCredential = async function (response) {
+      const {res, data} = await submitJson('/api/auth/google', { credential: response.credential });
+      if (!res.ok || data.error) { showStatus(data.error || 'تعذر الدخول بجوجل', false); return; }
+      showStatus('تم تسجيل الدخول بحساب جوجل', true);
+      afterAuthSuccess();
+    };
+    (async function initGoogle(){
+      try {
+        const cfg = await (await fetch('/api/auth/config')).json();
+        if (!cfg.googleEnabled) return;
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.onload = function(){
+          if (!window.google || !google.accounts || !google.accounts.id) return;
+          google.accounts.id.initialize({ client_id: cfg.googleClientId, callback: window.handleGoogleCredential });
+          google.accounts.id.renderButton(document.getElementById('googleBtn'), {
+            theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', locale: 'ar', width: 280
+          });
+          document.getElementById('googleBox').classList.remove('hidden');
+        };
+        document.head.appendChild(script);
+      } catch (e) {}
+    })();
+
+    const tabs = document.querySelectorAll('.tabs button');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const status = document.getElementById('status');
+
+    tabs.forEach((btn)=>btn.addEventListener('click', ()=>{
+      tabs.forEach((b)=>b.classList.toggle('active', b===btn));
+      loginForm.classList.toggle('hidden', btn.dataset.tab !== 'login');
+      registerForm.classList.toggle('hidden', btn.dataset.tab !== 'register');
+      status.classList.remove('show');
+    }));
+
+    async function submitJson(url, body){
+      const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const data = await res.json().catch(()=>({}));
+      return {res, data};
+    }
+
+    function showStatus(msg, ok){
+      status.classList.add('show');
+      status.classList.toggle('ok', !!ok);
+      status.textContent = msg;
+    }
+
+    async function afterAuthSuccess(){
+      // Best-effort: offer push notifications right after auth so the
+      // customer is ready to receive order updates. Never blocks navigation.
+      try { if (window.YousefNotify) await window.YousefNotify.registerServiceWorker(); } catch (e) {}
+      window.location.href = hasNext ? nextUrl : '/dashboard.html';
+    }
+
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const {res, data} = await submitJson('/api/auth/login', { email, password, role: 'customer' });
+      if (!res.ok || data.error) {
+        showStatus(data.error || 'حدث خطأ أثناء تسجيل الدخول', false); return;
+      }
+      showStatus('تم تسجيل الدخول بنجاح', true);
+      afterAuthSuccess();
+    });
+
+    registerForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const {res, data} = await submitJson('/api/auth/register', {
+        name: document.getElementById('registerName').value.trim(),
+        email,
+        password: document.getElementById('registerPassword').value
+      });
+      if (!res.ok || data.error) { showStatus(data.error || 'حدث خطأ أثناء إنشاء الحساب', false); return; }
+      // (إصلاح) الحساب اتعمل بس لسه *غير مفعّل*. لو فيه كود اتبعت على البريد،
+      // بنوديه لصفحة إدخال الكود مش للوحة الحساب — ده اللي بيخلّي التفعيل
+      // حقيقي بدل ما يكون شكل.
+      showStatus(data.message || 'تم إنشاء الحساب بنجاح', true);
+      setTimeout(() => {
+        if (data.emailVerificationAvailable) {
+          window.location.href = '/verify-email.html?email=' + encodeURIComponent(email);
+        } else {
+          afterAuthSuccess();
+        }
+      }, 1200);
+    });
+  </script>
+</body>
+</html>

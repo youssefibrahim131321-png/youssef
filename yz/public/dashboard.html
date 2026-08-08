@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#c8793f">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة حسابي | يوسف لمستلزمات العربيات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/ui-utils.js"></script>
+  <script src="/csrf.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <style>
+    *{box-sizing:border-box;}
+    body{
+      margin:0;font-family:'Tajawal',sans-serif;color:var(--text);min-height:100vh;padding:0 0 60px;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(200,121,63,.16), transparent 24%),
+        radial-gradient(circle at 82% 20%, rgba(47,111,98,.16), transparent 22%),
+        linear-gradient(180deg,#050609 0%,#0b0d15 55%,#0a0c12 100%);
+      background-attachment:fixed;
+    }
+    a{color:inherit;}
+    .topbar{
+      position:sticky;top:0;z-index:20;backdrop-filter:blur(20px);
+      background:rgba(8,10,16,.72);border-bottom:1px solid var(--line);
+    }
+    .topbar .wrap{max-width:1040px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px;}
+    .brand{display:flex;align-items:center;gap:10px;font-family:'Cairo',sans-serif;font-weight:900;text-decoration:none;}
+    .logo-mark{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:grid;place-items:center;}
+    .logo-mark svg{width:19px;height:19px;stroke:#1a1206;}
+    .spacer{flex:1;}
+    .btn{
+      border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);
+      padding:10px 16px;border-radius:12px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;
+      text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease);
+    }
+    .btn:hover{background:rgba(255,255,255,.08);transform:translateY(-1px);}
+    .btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1206;border:none;box-shadow:0 12px 28px rgba(200,121,63,.25);}
+    .btn.danger{color:#ffb4a8;border-color:rgba(229,72,60,.3);background:rgba(229,72,60,.08);}
+    .btn.tiny{padding:7px 12px;font-size:12.5px;}
+    main{max-width:1040px;margin:0 auto;padding:26px 20px;}
+    h1{font-family:'Cairo',sans-serif;font-size:27px;margin:0 0 4px;}
+    .lead{color:var(--muted-strong);margin:0 0 22px;font-size:14px;}
+    .tabs{display:flex;gap:8px;background:rgba(255,255,255,.03);padding:5px;border-radius:14px;border:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap;}
+    .tabs button{flex:1;min-width:120px;padding:11px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-weight:700;font-size:14px;transition:all .2s var(--ease);}
+    .tabs button.active{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1206;}
+    .card{
+      background:linear-gradient(180deg,var(--surface),var(--surface-2));
+      border:1px solid var(--line);border-radius:22px;padding:24px;margin-bottom:18px;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .card h2{font-family:'Cairo',sans-serif;font-size:18px;margin:0 0 16px;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
+    .stat{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .stat b{display:block;font-size:24px;font-family:'Cairo',sans-serif;}
+    .stat span{color:var(--muted);font-size:12.5px;}
+    form{display:grid;gap:14px;}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px;}
+    input{width:100%;padding:13px 15px;border-radius:13px;border:1px solid var(--line);font:inherit;background:rgba(255,255,255,.03);color:var(--text);outline:none;transition:border-color .2s,background .2s;}
+    input:focus{border-color:var(--gold);background:rgba(200,121,63,.06);}
+    input[readonly]{opacity:.65;cursor:not-allowed;}
+    .msg{margin-top:12px;padding:12px 14px;border-radius:13px;font-size:13.5px;display:none;background:rgba(229,72,60,.1);color:#ffb4a8;border:1px solid rgba(229,72,60,.22);}
+    .msg.show{display:block;}
+    .msg.ok{background:rgba(62,207,142,.1);color:#7fe8c9;border-color:rgba(62,207,142,.22);}
+    .order{border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;background:rgba(255,255,255,.02);}
+    .order-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+    .order-head strong{font-family:'Cairo',sans-serif;font-size:15.5px;}
+    .order-head time{color:var(--muted);font-size:12.5px;}
+    .badge{padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line);}
+    .badge.pending{background:rgba(224,161,92,.12);color:#f0c48b;}
+    .badge.confirmed{background:rgba(90,143,176,.14);color:#a8cfe4;}
+    .badge.shipping{background:rgba(47,111,98,.18);color:#8fd8c5;}
+    .badge.done{background:rgba(62,207,142,.12);color:#7fe8c9;}
+    .badge.cancelled{background:rgba(229,72,60,.12);color:#ffb4a8;}
+    .order-items{display:grid;gap:6px;margin:10px 0;color:var(--muted);font-size:13.5px;}
+    .order-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:12px;margin-top:10px;}
+    .total{font-weight:800;font-family:'Cairo',sans-serif;font-size:16px;margin-inline-start:auto;}
+    .empty{padding:34px;text-align:center;color:var(--muted);font-size:14px;}
+    .hidden{display:none;}
+    @media (max-width:640px){ .row{grid-template-columns:1fr;} main{padding:20px 14px;} }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <span class="logo-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M10 22V13a2 2 0 012-2h4a2 2 0 012 2v9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 22h12a2 2 0 002-2V13a2 2 0 00-2-2H14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>يوسف لمستلزمات العربيات</span>
+      </a>
+      <span class="spacer"></span>
+      <a class="btn" href="/">المتجر</a>
+      <button class="btn danger" id="logoutBtn" type="button">تسجيل خروج</button>
+    </div>
+  </div>
+
+  <main>
+    <h1 id="welcome">لوحة حسابي</h1>
+    <p class="lead">تابع طلباتك، عدّل بياناتك، وغيّر كلمة المرور من مكان واحد.</p>
+
+    <!-- (2) تنبيه تفعيل البريد: بيظهر بس لو الحساب لسه غير مفعّل -->
+
+    <div class="stats">
+      <div class="stat"><b id="statOrders">0</b><span>إجمالي الطلبات</span></div>
+      <div class="stat"><b id="statActive">0</b><span>طلبات جارية</span></div>
+      <div class="stat"><b id="statSpent">0</b><span>إجمالي مشترياتك (ج.م)</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="active" data-tab="orders" type="button">طلباتي</button>
+      <button data-tab="profile" type="button">بياناتي</button>
+      <button data-tab="security" type="button">كلمة المرور</button>
+    </div>
+
+    <section id="tab-orders" class="card">
+      <h2 id="orders">طلباتي</h2>
+      <div id="ordersList"><div class="empty">جاري تحميل طلباتك...</div></div>
+    </section>
+
+    <section id="tab-profile" class="card hidden">
+      <h2>بياناتي الشخصية</h2>
+      <form id="profileForm">
+        <div class="row">
+          <div><label for="pName">الاسم</label><input id="pName" required minlength="2" maxlength="80" /></div>
+          <div><label for="pEmail">البريد الإلكتروني</label><input id="pEmail" readonly /></div>
+        </div>
+        <div class="row">
+          <div><label for="pPhone">رقم الهاتف</label><input id="pPhone" maxlength="30" placeholder="01xxxxxxxxx" /></div>
+          <div><label for="pAddress">العنوان</label><input id="pAddress" maxlength="300" placeholder="العنوان بالتفصيل" /></div>
+        </div>
+        <button class="btn primary" type="submit">حفظ التعديلات</button>
+      </form>
+      <div id="profileMsg" class="msg"></div>
+    </section>
+
+    <section id="tab-security" class="card hidden">
+      <h2>تغيير كلمة المرور</h2>
+      <form id="passwordForm">
+        <div><label for="curPass">كلمة المرور الحالية</label><input id="curPass" type="password" required autocomplete="current-password" /></div>
+        <div class="row">
+          <div><label for="newPass">كلمة المرور الجديدة</label><input id="newPass" type="password" required minlength="8" autocomplete="new-password" /></div>
+          <div><label for="newPass2">تأكيد كلمة المرور</label><input id="newPass2" type="password" required minlength="8" autocomplete="new-password" /></div>
+        </div>
+        <button class="btn primary" type="submit">تحديث كلمة المرور</button>
+      </form>
+      <div id="passwordMsg" class="msg"></div>
+      <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px;">
+        <p class="lead" style="margin:0 0 10px">لو بتشك إن حد تاني داخل على حسابك، اقفل كل الجلسات على كل الأجهزة.</p>
+        <button class="btn danger" id="logoutAllBtn" type="button">تسجيل خروج من كل الأجهزة</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/notify-client.js"></script>
+  <script>
+    let currentUser = null;
+    const $ = (id) => document.getElementById(id);
+    // (تنظيف) fmt/esc بقوا من ui-utils.js — نسخة واحدة لكل الصفحات.
+    const fmt = window.YousefUI.formatEGP;
+    const esc = window.YousefUI.escapeHtml;
+
+    const STATUS_LABEL = {
+      pending: 'قيد المراجعة', confirmed: 'تم التأكيد', shipping: 'في الطريق',
+      done: 'تم التسليم', cancelled: 'ملغي'
+    };
+
+    function api(path, options = {}) {
+      return fetch(path, { headers: { 'Content-Type': 'application/json' }, ...options })
+        .then(async (res) => ({ res, data: await res.json().catch(() => ({})) }));
+    }
+    function showMsg(el, text, ok) {
+      el.textContent = text;
+      el.classList.add('show');
+      el.classList.toggle('ok', !!ok);
+    }
+
+    document.querySelectorAll('.tabs button').forEach((btn) => btn.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b === btn));
+      ['orders', 'profile', 'security'].forEach((name) => {
+        $('tab-' + name).classList.toggle('hidden', name !== btn.dataset.tab);
+      });
+    }));
+
+    async function loadMe() {
+      const { data } = await api('/api/auth/me');
+      if (!data.loggedIn) { window.location.href = '/account.html?next=dashboard.html'; return false; }
+      currentUser = data.user;
+      $('welcome').textContent = `أهلًا ${currentUser.name || ''}`;
+      $('pName').value = currentUser.name || '';
+      $('pEmail').value = currentUser.email || '';
+      $('pPhone').value = currentUser.phone || '';
+      $('pAddress').value = currentUser.address || '';
+      return true;
+    }
+
+    function renderOrders(orders) {
+      const list = $('ordersList');
+      if (!orders.length) {
+        list.innerHTML = '<div class="empty">لسه مافيش طلبات. <a href="/#products" style="color:var(--gold-2)">اتفرج على المنتجات</a></div>';
+        return;
+      }
+      list.innerHTML = orders.map((order) => {
+        const status = STATUS_LABEL[order.status] || order.status;
+        const items = (order.items || []).map((item) =>
+          `<div>• ${esc(item.name)} × ${Number(item.quantity)} — ${fmt(Number(item.price) * Number(item.quantity))}</div>`
+        ).join('');
+        const canCancel = ['pending', 'confirmed'].includes(order.status);
+        return `<div class="order">
+          <div class="order-head">
+            <strong>طلب #${Number(order.id)}</strong>
+            <span class="badge ${esc(order.status)}">${esc(status)}</span>
+            <time>${new Date(order.created_at).toLocaleString('ar-EG')}</time>
+          </div>
+          <div class="order-items">${items || '<div>لا توجد تفاصيل</div>'}</div>
+          <div class="order-foot">
+            <a class="btn tiny" href="/invoice/${Number(order.id)}" target="_blank" rel="noopener">الفاتورة</a>
+            ${canCancel ? `<button class="btn tiny danger" data-cancel="${Number(order.id)}" type="button">إلغاء الطلب</button>` : ''}
+            <span class="total">${fmt(order.total_amount)}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderStats(orders) {
+      const valid = orders.filter((o) => o.status !== 'cancelled');
+      $('statOrders').textContent = orders.length;
+      $('statActive').textContent = orders.filter((o) => ['pending', 'confirmed', 'shipping'].includes(o.status)).length;
+      $('statSpent').textContent = valid.reduce((sum, o) => sum + Number(o.total_amount || 0), 0).toLocaleString('en-US');
+    }
+
+    async function loadOrders() {
+      const { res, data } = await api('/api/orders/mine');
+      if (!res.ok) { $('ordersList').innerHTML = '<div class="empty">تعذر تحميل الطلبات.</div>'; return; }
+      const orders = data.orders || [];
+      renderOrders(orders);
+      renderStats(orders);
+    }
+
+    $('ordersList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-cancel]');
+      if (!btn) return;
+      if (!confirm('متأكد إنك عايز تلغي الطلب ده؟')) return;
+      btn.disabled = true;
+      const { res, data } = await api(`/api/orders/${btn.dataset.cancel}/cancel`, { method: 'POST' });
+      if (!res.ok) { alert(data.error || 'تعذر إلغاء الطلب'); btn.disabled = false; return; }
+      loadOrders();
+    });
+
+    $('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = $('profileMsg');
+      const { res, data } = await api('/api/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: $('pName').value.trim(),
+          phone: $('pPhone').value.trim(),
+          address: $('pAddress').value.trim()
+        })
+      });
+      if (!res.ok) { showMsg(msg, data.error || 'تعذر حفظ البيانات', false); return; }
+      currentUser = data.user || currentUser;
+      showMsg(msg, 'تم حفظ بياناتك بنجاح ✓', true);
+    });
+
+    $('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = $('passwordMsg');
+      if ($('newPass').value !== $('newPass2').value) { showMsg(msg, 'كلمتا المرور غير متطابقتين', false); return; }
+      const { res, data } = await api('/api/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify({ currentPassword: $('curPass').value, newPassword: $('newPass').value })
+      });
+      if (!res.ok) { showMsg(msg, data.error || 'تعذر تغيير كلمة المرور', false); return; }
+      $('passwordForm').reset();
+      showMsg(msg, 'تم تغيير كلمة المرور بنجاح ✓', true);
+    });
+
+    $('logoutAllBtn').addEventListener('click', async () => {
+      const { res, data } = await api('/api/auth/logout-all-devices', { method: 'POST' });
+      showMsg($('passwordMsg'), res.ok ? 'تم تسجيل الخروج من كل الأجهزة الأخرى ✓' : (data.error || 'تعذر التنفيذ'), res.ok);
+    });
+
+    $('logoutBtn').addEventListener('click', async () => {
+      await api('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    (async function init() {
+      if (await loadMe()) loadOrders();
+      if (location.hash === '#orders') document.querySelector('.tabs button[data-tab="orders"]').click();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>تسجيل دخول المسؤول | يوسف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@300;400;500;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <style>
+    :root{
+      --void:#06070a; --ink-800:#0f1119; --ink-700:#161926;
+      --gold:#c8793f; --violet:#2f6f62; --rose:#e5483c;
+      --text:#f5f6fb; --muted:#9aa0b3; --line:rgba(255,255,255,.09);
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;font-family:'Tajawal',sans-serif;color:var(--text);min-height:100vh;
+      display:grid;place-items:center;padding:24px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(47, 111, 98,.20), transparent 22%),
+        radial-gradient(circle at 84% 20%, rgba(200, 121, 63,.14), transparent 20%),
+        radial-gradient(circle at 50% 88%, rgba(229, 72, 60,.10), transparent 22%),
+        linear-gradient(180deg,#050609 0%,#0b0d15 55%,#0a0c12 100%);
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+      background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+      background-size:56px 56px;
+      mask-image:radial-gradient(circle at 50% 40%, black, transparent 72%);
+      -webkit-mask-image:radial-gradient(circle at 50% 40%, black, transparent 72%);
+    }
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);z-index:0;opacity:.55;animation:float 12s ease-in-out infinite alternate;}
+    .orb.o1{width:340px;height:340px;background:var(--violet);top:-100px;right:-80px;}
+    .orb.o2{width:280px;height:280px;background:var(--gold);bottom:-90px;left:-70px;animation-delay:2s;}
+    @keyframes float{ from{transform:translateY(0) scale(1);} to{transform:translateY(-24px) scale(1.06);} }
+
+    .card{
+      position:relative;z-index:1;width:min(440px,100%);
+      background:linear-gradient(180deg, rgba(22,25,38,.78), rgba(15,17,25,.86));
+      border:1px solid var(--line);border-radius:26px;padding:36px 32px;
+      box-shadow:0 30px 90px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(20px);
+      animation:riseIn .6s var(--ease);
+    }
+    @keyframes riseIn{ from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+    .shield{
+      width:56px;height:56px;border-radius:16px;margin-bottom:18px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--violet),#3f8f7d);
+      box-shadow:0 14px 34px rgba(47, 111, 98,.32);
+    }
+    .shield svg{width:26px;height:26px;stroke:#fff;}
+    h1{margin:0 0 8px;font-size:26px;font-weight:900;font-family:'Cairo',sans-serif;}
+    p.lead{color:var(--muted);margin:0 0 26px;font-size:14.5px;line-height:1.7;}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px;}
+    .field{margin-bottom:16px;}
+    input{
+      width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
+      font:inherit;background:rgba(255,255,255,.03);color:var(--text);outline:none;
+      transition:border-color .2s,background .2s;
+    }
+    input:focus{border-color:var(--violet);background:rgba(47, 111, 98,.06);}
+    button{
+      width:100%;padding:15px 16px;border-radius:14px;border:none;font:inherit;
+      background:linear-gradient(135deg,var(--violet),#3f8f7d);color:#fff;font-weight:800;
+      margin-top:6px;cursor:pointer;font-size:15.5px;
+      box-shadow:0 16px 36px rgba(47, 111, 98,.3);
+      transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    button:hover{transform:translateY(-2px);box-shadow:0 20px 44px rgba(47, 111, 98,.4);}
+    button:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+    .status{margin-top:16px;padding:13px 14px;border-radius:14px;background:rgba(229, 72, 60,.1);color:#ffb0bd;border:1px solid rgba(229, 72, 60,.22);display:none;font-size:14px;}
+    .status.show{display:block;}
+    .status.ok{background:rgba(62, 207, 142,.1);color:#7fe8c9;border-color:rgba(62, 207, 142,.22);}
+    .back-link{display:block;text-align:center;margin-top:22px;color:var(--muted);font-size:13.5px;text-decoration:none;}
+    .back-link:hover{color:var(--text);}
+  </style>
+</head>
+<body>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="card">
+    <div class="shield">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.6-3 8.4-7 9-4-.6-7-4.4-7-9V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 12.5l1.8 1.8L15 10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>لوحة تحكم المسؤول</h1>
+    <p class="lead">الدخول الخاص بمسؤولي المتجر فقط. عملاء المتجر يستخدمون صفحة الحساب العادية.</p>
+    <form id="adminLoginForm">
+      <div class="field">
+        <label for="adminEmail">البريد الإلكتروني</label>
+        <input id="adminEmail" type="email" placeholder="admin@store.com" required autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="adminPassword">كلمة المرور</label>
+        <input id="adminPassword" type="password" placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <div class="field" id="totpField" style="display:none">
+        <label for="adminTotp">كود التحقق بخطوتين (6 أرقام)</label>
+        <input id="adminTotp" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
+      </div>
+      <button type="submit" id="submitBtn">دخول لوحة التحكم</button>
+    </form>
+    <div id="status" class="status"></div>
+    <div class="links">
+      <a href="/forgot-password.html">نسيت كلمة المرور؟</a>
+      <a href="/account.html">دخول العملاء</a>
+    </div>
+    <a class="back-link" href="/">← العودة إلى المتجر</a>
+  </div>
+  <script src="/ui-utils.js"></script>
+  <script src="/csrf.js"></script>
+  <script>
+    async function submitJson(url, body){ const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); const data = await res.json().catch(()=>({})); return {res, data}; }
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const status = document.getElementById('status');
+      const email = document.getElementById('adminEmail').value.trim().toLowerCase();
+      const password = document.getElementById('adminPassword').value;
+      btn.disabled = true;
+      btn.textContent = 'جاري التحقق...';
+      const totpCode = document.getElementById('adminTotp').value.trim();
+      const {res, data} = await submitJson('/api/auth/login', { email, password, role: 'admin', totpCode });
+      status.classList.add('show');
+      status.classList.toggle('ok', res.ok && !data.error);
+      if (data.twoFactorRequired) {
+        document.getElementById('totpField').style.display = '';
+        document.getElementById('adminTotp').focus();
+      }
+      status.textContent = data.error || 'تم تسجيل الدخول بنجاح. جاري التحويل...';
+      if (res.ok && !data.error) {
+        window.location.href = '/admin.html';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'دخول لوحة التحكم';
+      }
+    });
+  </script>
+</body>
+</html>

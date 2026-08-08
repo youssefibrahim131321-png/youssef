@@ -1,0 +1,176 @@
+// (إصلاح) الإصدار اتزوّد عشان الكاش القديم الناقص يتمسح عند كل العملاء.
+const CACHE_NAME = 'yousef-store-v9';
+// كاش منفصل لصور /uploads/ بحد أقصى وتنظيف (LRU) عشان ما يكبرش بلا نهاية.
+const MEDIA_CACHE = 'yousef-store-media-v9';
+const MEDIA_MAX_ENTRIES = 60;
+// صفحة أوفلاين واضحة بدل ما نرجّع الصفحة الرئيسية لأي مسار.
+const OFFLINE_URL = '/offline.html';
+// كان theme.css ناقص هنا، فالموقع أوفلاين كان بيظهر من غير أي تنسيق.
+// ملاحظة: مفيش أي صفحة HTML هنا غير offline.html (بدون سكربت inline)، عشان
+// ما نكاشش صفحة بـ CSP nonce قديم.
+const SHELL_ASSETS = [
+  '/theme.css',
+  '/styles.css',
+  '/tokens.css',
+  '/auth.css',
+  '/admin.css',
+  '/ui-utils.js',
+  '/csrf.js',
+  '/storefront.js',
+  '/admin.js',
+  '/notify-client.js',
+  '/manifest.json',
+  '/icon.svg',
+  '/icon-192.png',
+  '/uploads/products/placeholder.jpg',
+  OFFLINE_URL
+];
+// امتدادات ثابتة (CSS/JS) بتتكاش دايمًا بنفس استراتيجية الـ shell (stale-while-revalidate)
+// حتى لو الملف نفسه مش في SHELL_ASSETS، عشان صفحات الأدمن/الحساب تشتغل أوفلاين.
+const RUNTIME_CACHEABLE_EXT = /\.(css|js)$/i;
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      // addAll بيفشل كله لو ملف واحد مش موجود، فبنكاش كل ملف لوحده.
+      .then((cache) => Promise.all(SHELL_ASSETS.map((asset) => cache.add(asset).catch(() => null))))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    // (إصلاح) كان بيمسح MEDIA_CACHE نفسه في كل تفعيل، فكاش الصور كان بلا فايدة.
+    caches.keys()
+      .then((keys) => Promise.all(keys
+        .filter((key) => key !== CACHE_NAME && key !== MEDIA_CACHE)
+        .map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+
+  if (request.mode === 'navigate') {
+    // (إصلاح تعارض CSP nonce) صفحات الـ HTML *مش* بتتكاش أبدًا: السيرفر بيحقن
+    // nonce عشوائي في كل طلب، فأي نسخة مخزّنة هتتقدّم بـ nonce قديم وكل
+    // السكربتات الـ inline هتتحظر → صفحة بيضا. الشبكة أولًا، ولو مفيش نت
+    // بنرجّع صفحة الأوفلاين الثابتة (اللي مفيهاش سكربت inline) بس.
+    event.respondWith((async () => {
+      try {
+        return await fetch(request);
+      } catch (_) {
+        return (await caches.match(OFFLINE_URL)) || new Response('أنت غير متصل بالإنترنت.', {
+          status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
+      }
+    })());
+    return;
+  }
+
+  if (url.origin === self.location.origin) {
+    // أي طلب لواجهات الـ API ما يتكاشش أبدًا (بيانات حية + جلسات).
+    if (url.pathname.startsWith('/api/')) return;
+
+    if (SHELL_ASSETS.includes(url.pathname) || RUNTIME_CACHEABLE_EXT.test(url.pathname)) {
+      event.respondWith(staleWhileRevalidate(request));
+      return;
+    }
+    // (إصلاح) صور المنتجات والهيرو المرفوعة بقت متكاشة كمان، فالموقع أوفلاين
+    // يفضل بصورته الكاملة بدل صور مكسورة.
+    if (url.pathname.startsWith('/uploads/')) {
+      event.respondWith(mediaCache(request));
+      return;
+    }
+    return;
+  }
+
+  if (url.origin === 'https://images.pexels.com') {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
+  if (url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com') {
+    event.respondWith(cacheFirst(request));
+  }
+});
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const fresh = await fetch(request);
+  if (fresh && fresh.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, fresh.clone());
+  }
+  return fresh;
+}
+
+// كاش الصور: نفس فكرة stale-while-revalidate بس في كاش منفصل بحد أقصى
+// للعناصر، والأقدم بيتشال أول (تنظيف تلقائي بدل نمو بلا حدود).
+async function mediaCache(request) {
+  const cache = await caches.open(MEDIA_CACHE);
+  const cached = await cache.match(request);
+  const update = fetch(request).then(async (response) => {
+    if (response && response.ok) {
+      await cache.put(request, response.clone());
+      await trimCache(cache, MEDIA_MAX_ENTRIES);
+    }
+    return response;
+  }).catch(() => cached);
+  return cached || update;
+}
+
+async function trimCache(cache, maxEntries) {
+  const keys = await cache.keys();
+  if (keys.length <= maxEntries) return;
+  await Promise.all(keys.slice(0, keys.length - maxEntries).map((key) => cache.delete(key)));
+}
+
+async function staleWhileRevalidate(request) {
+  const cached = await caches.match(request);
+  const fetchPromise = fetch(request).then((response) => {
+    if (response && response.ok) {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+    }
+    return response;
+  }).catch(() => cached);
+  return cached || fetchPromise;
+}
+
+// ---------------------------------------------------------------------------
+// Web Push: shows a real OS/browser notification even if the site tab is
+// closed, for order-confirmed and "order is on the way" alerts.
+// ---------------------------------------------------------------------------
+self.addEventListener('push', (event) => {
+  let payload = { title: 'يوسف لمستلزمات العربيات', body: 'لديك تحديث جديد على طلبك.' };
+  try { if (event.data) payload = { ...payload, ...event.data.json() }; } catch (err) {}
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      dir: 'rtl',
+      lang: 'ar',
+      data: { url: payload.url || '/' },
+      vibrate: [80, 40, 80]
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) return client.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
+});
