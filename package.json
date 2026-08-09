@@ -20,7 +20,7 @@
     "node": ">=20 <23"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "better-sqlite3": "^11.10.0",
     "express": "^4.21.2",
     "multer": "^2.2.0",
