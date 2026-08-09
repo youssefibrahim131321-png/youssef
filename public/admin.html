@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="/theme.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow" />
+<title>لوحة تحكم يوسف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@300;400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-mark">ي</span> يوسف<span class="dot">.</span></div>
+    <button class="nav-item active" data-page="overview">📊 نظرة عامة</button>
+    <button class="nav-item" data-page="orders">🧾 الطلبات <span class="badge hidden" id="ordersBadge">0</span></button>
+    <button class="nav-item" data-page="products">📦 المنتجات</button>
+    <button class="nav-item" data-page="inventory">🏷️ المخزون</button>
+    <div class="nav-sep">التسويق</div>
+    <button class="nav-item" data-page="coupons">🎟️ الكوبونات</button>
+    <button class="nav-item" data-page="reviews">⭐ التقييمات</button>
+    <button class="nav-item" data-page="broadcast">📣 إشعار جماعي</button>
+    <div class="nav-sep">الإدارة</div>
+    <button class="nav-item" data-page="users">👥 المستخدمون</button>
+    <button class="nav-item" data-page="activity">🕘 سجل النشاط</button>
+    <button class="nav-item" data-page="settings">⚙️ الإعدادات</button>
+    <div class="nav-sep">&nbsp;</div>
+    <a class="nav-item" href="/index.html">🏬 عرض المتجر</a>
+    <button class="nav-item" id="logoutBtn">🚪 تسجيل الخروج</button>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">نظرة عامة</h1>
+        <div class="sub" id="pageSub">ملخص أداء المتجر اليوم</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="icon-btn mobile-toggle" id="menuBtn" aria-label="فتح القائمة الجانبية" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+      <button class="icon-btn theme-toggle" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر (فاتح/غامق)"><span aria-hidden="true">🌗</span></button>
+      <button class="icon-btn" id="refreshBtn" title="تحديث" aria-label="تحديث البيانات"><span aria-hidden="true">⟳</span></button>
+    </div>
+
+    <div id="passwordWarning" class="card hidden" style="border-color:var(--red);margin-bottom:18px">
+      <strong style="color:var(--red)">⚠️ تنبيه أمني:</strong>
+      حسابك يستخدم كلمة المرور الافتراضية. غيّرها الآن من
+      <button class="btn btn-sm btn-danger" data-page-link="users">صفحة المستخدمين</button>
+    </div>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="page" id="page-overview">
+      <div class="grid kpis" id="kpiGrid"></div>
+      <div class="grid two-col" style="margin-top:18px">
+        <div class="card">
+          <div class="section-title">📈 المبيعات آخر <select id="rangeSelect" style="width:auto;padding:4px 8px;font-size:13px"><option value="7">7</option><option value="14" selected>14</option><option value="30">30</option></select> يوم</div>
+          <svg class="chart" id="salesChart" viewBox="0 0 700 230" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="card">
+          <div class="section-title">🏆 الأكثر مبيعًا</div>
+          <div id="topProducts"></div>
+        </div>
+      </div>
+      <div class="grid two-col" style="margin-top:18px">
+        <div class="card">
+          <div class="section-title">🧾 آخر الطلبات</div>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>العميل</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody id="recentOrders"></tbody></table></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title">⚠️ مخزون منخفض</div>
+            <div id="lowStockList"></div>
+          </div>
+          <div class="card">
+            <div class="section-title">🥯 حالات الطلبات</div>
+            <div style="display:flex;align-items:center;gap:18px">
+              <svg viewBox="0 0 120 120" width="120" height="120" id="statusDonut" style="flex-shrink:0"></svg>
+              <div id="statusLegend" style="flex:1;display:flex;flex-direction:column;gap:6px;font-size:12.5px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid two-col" style="margin-top:18px">
+        <div class="card">
+          <div class="section-title">👑 أفضل العملاء</div>
+          <div id="topCustomers"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ORDERS ============ -->
+    <section class="page hidden" id="page-orders">
+      <div class="toolbar">
+        <input id="orderSearch" placeholder="بحث بالاسم / الهاتف / رقم الطلب">
+        <select id="orderStatus">
+          <option value="all">كل الحالات</option><option value="pending">قيد الانتظار</option>
+          <option value="confirmed">مؤكد</option><option value="shipping">في الطريق</option>
+          <option value="done">تم التسليم</option><option value="cancelled">ملغي</option>
+        </select>
+        <select id="orderPayment">
+          <option value="all">كل طرق الدفع</option><option value="cash-on-delivery">عند الاستلام</option>
+          <option value="vodafone-cash">فودافون كاش</option><option value="instapay">إنستاباي</option>
+          <option value="whatsapp">واتساب</option>
+        </select>
+        <input type="date" id="orderFrom" title="من تاريخ">
+        <input type="date" id="orderTo" title="إلى تاريخ">
+        <a class="btn btn-ghost btn-sm" href="/api/admin/orders/export.csv">⬇️ تصدير CSV</a>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>العميل</th><th>الهاتف</th><th>المنتجات</th><th>الإجمالي</th><th>الحالة</th><th>الدفع</th><th>الإيصال</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table></div>
+        <div class="toolbar" style="margin:16px 0 0;justify-content:center">
+          <button class="btn btn-ghost btn-sm" id="prevPage">السابق</button>
+          <span class="muted" id="pageInfo">1 / 1</span>
+          <button class="btn btn-ghost btn-sm" id="nextPage">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRODUCTS ============ -->
+    <section class="page hidden" id="page-products">
+      <div class="toolbar">
+        <input id="productSearch" placeholder="بحث في المنتجات">
+        <select id="productCategoryFilter"><option value="all">كل الأقسام</option></select>
+        <button class="btn btn-primary btn-sm" id="addProductBtn">+ منتج جديد</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr><th>الصورة</th><th>الاسم</th><th>القسم</th><th>السعر</th><th>المخزون</th><th>مبيعات</th><th>التقييم</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+          <tbody id="productsBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ============ INVENTORY ============ -->
+    <section class="page hidden" id="page-inventory">
+      <div class="grid kpis" id="inventoryKpis" style="margin-bottom:18px"></div>
+      <div class="card">
+        <div class="section-title">🏷️ تعديل سريع للمخزون</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>المنتج</th><th>المخزون</th><th>قيمة المخزون</th><th>تعديل</th></tr></thead>
+          <tbody id="inventoryBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ============ COUPONS ============ -->
+    <section class="page hidden" id="page-coupons">
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title">🎟️ الكوبونات الحالية</div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>الكود</th><th>النوع</th><th>القيمة</th><th>حد أدنى</th><th>استُخدم</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="couponsBody"></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="section-title">➕ كوبون جديد</div>
+          <form id="couponForm">
+            <div class="field"><label>الكود</label><input name="code" required placeholder="SUMMER20"></div>
+            <div class="row">
+              <div class="field"><label>النوع</label><select name="type"><option value="percent">نسبة %</option><option value="fixed">مبلغ ثابت</option></select></div>
+              <div class="field"><label>القيمة</label><input name="value" type="number" min="0" required></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>حد أدنى للطلب</label><input name="minTotal" type="number" min="0" value="0"></div>
+              <div class="field"><label>أقصى استخدام (0 = بلا حد)</label><input name="maxUses" type="number" min="0" value="0"></div>
+            </div>
+            <div class="field"><label>تاريخ الانتهاء</label><input name="expiresAt" type="date"></div>
+            <button class="btn btn-primary" type="submit">حفظ الكوبون</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REVIEWS ============ -->
+    <section class="page hidden" id="page-reviews">
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr><th>المنتج</th><th>العميل</th><th>التقييم</th><th>التعليق</th><th>التاريخ</th><th></th></tr></thead>
+          <tbody id="reviewsBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ============ BROADCAST ============ -->
+    <section class="page hidden" id="page-broadcast">
+      <div class="card" style="max-width:560px">
+        <div class="section-title">📣 إرسال إشعار لكل العملاء</div>
+        <form id="broadcastForm">
+          <div class="field"><label>العنوان</label><input name="title" maxlength="80" required placeholder="عرض خاص اليوم!"></div>
+          <div class="field"><label>النص</label><textarea name="body" rows="3" maxlength="300" required placeholder="خصم 20% على كل الزيوت لمدة 24 ساعة"></textarea></div>
+          <button class="btn btn-primary" type="submit">إرسال الآن</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ USERS ============ -->
+    <section class="page hidden" id="page-users">
+      <div class="toolbar">
+        <input id="userSearch" placeholder="بحث بالاسم أو البريد">
+        <button class="btn btn-primary btn-sm" id="addUserBtn">+ مستخدم جديد</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الهاتف</th><th>الصلاحية</th><th>طلبات</th><th>إنفاق</th><th>إجراءات</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ============ ACTIVITY ============ -->
+    <section class="page hidden" id="page-activity">
+      <div class="card"><div id="activityList"></div></div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="page hidden" id="page-settings">
+      <div class="grid two-col">
+        <div class="card">
+          <div class="section-title">⚙️ إعدادات المتجر</div>
+          <form id="settingsForm">
+            <div class="row">
+              <div class="field"><label>اسم المتجر</label><input name="name"></div>
+              <div class="field"><label>الوصف المختصر</label><input name="tagline"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>الهاتف</label><input name="phone"></div>
+              <div class="field"><label>رقم واتساب (دولي)</label><input name="whatsappNumber"></div>
+            </div>
+            <div class="field"><label>العنوان</label><input name="address"></div>
+            <div class="row">
+              <div class="field"><label>فيسبوك</label><input name="facebook"></div>
+              <div class="field"><label>إنستجرام</label><input name="instagram"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>مصاريف الشحن</label><input name="shippingFee" type="number" min="0"></div>
+              <div class="field"><label>شحن مجاني فوق</label><input name="freeShippingOver" type="number" min="0"></div>
+              <div class="field"><label>الضريبة %</label><input name="taxPercent" type="number" min="0" max="100"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>حد المخزون المنخفض</label><input name="lowStockThreshold" type="number" min="0"></div>
+              <div class="field"><label>حالة المتجر</label><select name="storeOpen"><option value="1">مفتوح</option><option value="0">مغلق مؤقتًا</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>رقم فودافون كاش</label><input name="vodafoneCashNumber" placeholder="01000000000"></div>
+              <div class="field"><label>رقم إنستاباي</label><input name="instapayNumber" placeholder="01000000000 أو @اسم المستخدم"></div>
+            </div>
+            <p class="muted" style="font-size:12.5px;margin:-6px 0 14px">الرقم اللي هتحطه هنا هيظهر تلقائيًا للعميل في صفحة الدفع لما يختار فودافون كاش أو إنستاباي.</p>
+            <div class="field"><label>شريط إعلان أعلى الموقع</label><input name="announcement" placeholder="اتركه فارغًا لإخفائه"></div>
+            <button class="btn btn-primary" type="submit">حفظ الإعدادات</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="section-title">🛡️ البيانات والأمان</div>
+          <p class="muted" style="font-size:13.5px;margin-bottom:14px">أنشئ نسخة احتياطية فورية أو صدّر بياناتك بالكامل (بدون كلمات المرور).</p>
+          <button class="btn btn-ghost" id="backupBtn" style="margin-bottom:10px">💾 نسخة احتياطية الآن</button><br>
+          <a class="btn btn-ghost" href="/api/admin/export.json" style="margin-bottom:18px">⬇️ تصدير البيانات JSON</a>
+          <div class="section-title" style="margin-top:20px">🔑 تغيير كلمة مروري</div>
+          <form id="passwordForm">
+            <div class="field"><label>كلمة المرور الحالية</label><input name="currentPassword" type="password" required></div>
+            <div class="field"><label>كلمة المرور الجديدة (8 أحرف+)</label><input name="newPassword" type="password" minlength="8" required></div>
+            <button class="btn btn-primary" type="submit">تحديث كلمة المرور</button>
+          </form>
+          <div class="section-title" style="margin-top:20px">🚪 الجلسات المفتوحة</div>
+          <p class="muted" style="font-size:13.5px;margin-bottom:10px">لو حسّيت إن في جهاز غريب مسجل دخول بحسابك، اضغط هنا لإلغاء كل الجلسات المفتوحة على الأجهزة الأخرى (الجهاز ده هيفضل مسجل دخول).</p>
+          <button class="btn btn-ghost" id="logoutAllBtn">🚪 تسجيل خروج من كل الأجهزة</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+
+<script src="/ui-utils.js"></script>
+  <script src="/csrf.js"></script>
+<script src="/admin.js" defer></script>
+</body>
+</html>

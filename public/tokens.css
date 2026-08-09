@@ -1,0 +1,55 @@
+/* ---------------------------------------------------------------------------
+ * توكنز التصميم المشتركة لصفحات الحساب/لوحة العميل/الدفع.
+ * كانت مكرّرة inline في كل صفحة، فأي تغيير في الألوان كان لازم يتعمل ٣ مرات
+ * (ومعرّض إن الصفحات تتفرّق في الشكل). الملف ده هو المصدر الوحيد للحقيقة،
+ * وبيتكاش في المتصفح وفي الـ service worker.
+ * ------------------------------------------------------------------------- */
+:root {
+  --gold: #ce7c3e;
+  --gold-2: #eaad68;
+  --accent: #ce7c3e;
+  --accent-2: #eaad68;
+  --violet: #3e8c74;
+  --teal: #3e8c74;
+  --rose: #e5483c;
+  --danger: #e5483c;
+  --emerald: #3ecf8e;
+  --bg: #0a0c10;
+  --panel: #12151b;
+  --panel-2: #171b22;
+  --text: #f1f2f6;
+  --muted: #97a0b3;
+  --muted-strong: #ccd1de;
+  --line: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --surface: rgba(18, 21, 27, 0.72);
+  --surface-2: rgba(12, 14, 19, 0.86);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: dark;
+}
+
+/* الثيم الأبيض — نفس المتغيرات، قيم فاتحة. الصفحات اللي بتستخدم tokens.css
+   (الحساب/الطلبات/الدفع) بتاخده تلقائي بمجرد ما data-theme="light" تتحط
+   على <html> أو <body>. */
+[data-theme="light"] {
+  --gold: #bd6c2f;
+  --gold-2: #d98a45;
+  --accent: #bd6c2f;
+  --accent-2: #d98a45;
+  --violet: #2c7a63;
+  --teal: #2c7a63;
+  --rose: #d13c30;
+  --danger: #d13c30;
+  --emerald: #1f9d6c;
+  --bg: #f3f4f7;
+  --panel: #ffffff;
+  --panel-2: #eceef2;
+  --text: #14171d;
+  --muted: #5b6472;
+  --muted-strong: #262b34;
+  --line: rgba(15, 18, 25, 0.09);
+  --border: rgba(15, 18, 25, 0.09);
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-2: rgba(255, 255, 255, 0.97);
+  color-scheme: light;
+}

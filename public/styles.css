@@ -1,0 +1,170 @@
+:root {
+  --surface: rgba(18, 21, 27, 0.95);
+  --surface-2: rgba(23, 27, 34, 0.96);
+  --text: #f1f2f6;
+  --muted: #97a0b3;
+  --accent: #ce7c3e;
+  --accent-2: #e5483c;
+  --line: rgba(241, 242, 246, 0.1);
+}
+[data-theme="light"] {
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-2: rgba(255, 255, 255, 0.98);
+  --text: #14171d;
+  --muted: #5b6472;
+  --accent: #bd6c2f;
+  --accent-2: #d13c30;
+  --line: rgba(15, 18, 25, 0.09);
+}
+
+body { min-height: 100vh; }
+
+.product-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.product-search {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.product-search input {
+  flex: 1;
+  background: transparent;
+  color: var(--text);
+  border: 0;
+  outline: 0;
+  font: inherit;
+}
+
+.product-search svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.product-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-pill,
+.product-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+.status-pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #42d392;
+  box-shadow: 0 0 0 3px rgba(66, 211, 146, 0.14);
+}
+
+.trust-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.trust-card {
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+}
+
+.trust-card strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.trust-card span {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.product-card {
+  min-height: 312px;
+}
+
+.product-card img.lazy {
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.product-card img.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 36px;
+  text-align: center;
+  color: var(--muted);
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+}
+
+@media (max-width: 900px) {
+  .trust-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .product-toolbar {
+    align-items: stretch;
+  }
+
+  .product-toolbar-meta {
+    justify-content: space-between;
+  }
+}
+/* ─── صفحات السياسات (الشحن / الاستبدال / الخصوصية) ─── */
+.legal-page { padding: 56px 0 80px; min-height: 100vh; }
+.legal-page .container { max-width: 780px; }
+.legal-back {
+  display: inline-block; margin-bottom: 24px; color: var(--brand, #ce7c3e);
+  text-decoration: none; font-weight: 700; min-height: 44px; line-height: 44px;
+}
+.legal-back:hover { text-decoration: underline; }
+.legal-page h1 { font-size: clamp(26px, 5vw, 38px); margin: 0 0 8px; }
+.legal-page h2 { font-size: clamp(18px, 3vw, 22px); margin: 32px 0 10px; }
+.legal-page p, .legal-page li { line-height: 1.9; color: var(--text-2, #b9b9b9); }
+.legal-page ul, .legal-page ol { padding-inline-start: 22px; margin: 10px 0; }
+.legal-page li { margin-bottom: 6px; }
+.legal-page a { color: var(--brand, #ce7c3e); }
+.legal-updated { font-size: 13px; opacity: .7; }
+.legal-contact { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line, #232323); }

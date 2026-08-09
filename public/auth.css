@@ -1,0 +1,110 @@
+/* ستايل صفحات المصادقة (استعادة كلمة المرور، التفعيل، التحقق بخطوتين) */
+
+    :root{
+      --void:#0a0c10; --ink-800:#12151d; --ink-700:#171b24;
+      --gold:#ce7c3e; --violet:#2f6f62; --rose:#e5483c;
+      --text:#f1f2f6; --muted:#97a0b3; --line:rgba(255,255,255,.08);
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;font-family:'Tajawal',sans-serif;color:var(--text);min-height:100vh;
+      display:grid;place-items:center;padding:24px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(47, 111, 98,.14), transparent 22%),
+        radial-gradient(circle at 84% 20%, rgba(206, 124, 62,.10), transparent 20%),
+        linear-gradient(180deg,#090a0e 0%,#0c0e14 55%,#0a0c11 100%);
+    }
+    /* أوربّتين بتتحركوا ببطء برضو (رجّعت الحركة زي ما طلبت) */
+    .orb{position:fixed;border-radius:50%;filter:blur(50px);z-index:0;opacity:.5;animation:float 12s ease-in-out infinite alternate;}
+    .orb.o1{width:340px;height:340px;background:var(--violet);top:-100px;right:-80px;}
+    .orb.o2{width:280px;height:280px;background:var(--gold);bottom:-90px;left:-70px;animation-delay:2s;}
+    @keyframes float{ from{transform:translateY(0) scale(1);} to{transform:translateY(-24px) scale(1.06);} }
+
+    .card{
+      position:relative;z-index:1;width:min(440px,100%);
+      background:linear-gradient(180deg, rgba(18,21,29,.85), rgba(12,14,19,.92));
+      border:1px solid var(--line);border-radius:26px;padding:36px 32px;
+      box-shadow:0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+      backdrop-filter:blur(10px);
+      animation:riseIn .5s var(--ease);
+    }
+    @keyframes riseIn{ from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+    .shield{
+      width:56px;height:56px;border-radius:16px;margin-bottom:18px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--violet),#3f8f7d);
+      box-shadow:0 14px 34px rgba(47, 111, 98,.32);
+    }
+    .shield svg{width:26px;height:26px;stroke:#fff;}
+    h1{margin:0 0 8px;font-size:26px;font-weight:900;font-family:'Cairo',sans-serif;}
+    p.lead{color:var(--muted);margin:0 0 26px;font-size:14.5px;line-height:1.7;}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px;}
+    .field{margin-bottom:16px;}
+    input{
+      width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
+      font:inherit;background:rgba(255,255,255,.03);color:var(--text);outline:none;
+      transition:border-color .2s,background .2s;
+    }
+    input:focus{border-color:var(--violet);background:rgba(47, 111, 98,.06);}
+    button{
+      width:100%;padding:15px 16px;border-radius:14px;border:none;font:inherit;
+      background:linear-gradient(135deg,var(--violet),#3f8f7d);color:#fff;font-weight:800;
+      margin-top:6px;cursor:pointer;font-size:15.5px;
+      box-shadow:0 16px 36px rgba(47, 111, 98,.3);
+      transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    button:hover{transform:translateY(-2px);box-shadow:0 20px 44px rgba(47, 111, 98,.4);}
+    button:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+    .status{margin-top:16px;padding:13px 14px;border-radius:14px;background:rgba(229, 72, 60,.1);color:#ffb0bd;border:1px solid rgba(229, 72, 60,.22);display:none;font-size:14px;}
+    .status.show{display:block;}
+    .status.ok{background:rgba(62, 207, 142,.1);color:#7fe8c9;border-color:rgba(62, 207, 142,.22);}
+    .back-link{display:block;text-align:center;margin-top:22px;color:var(--muted);font-size:13.5px;text-decoration:none;}
+    .back-link:hover{color:var(--text);}
+  
+    .field.hidden{display:none;}
+    .muted-note{color:var(--muted);font-size:13px;line-height:1.7;margin:10px 0 0;}
+    .secret-box{margin-top:14px;padding:14px;border-radius:14px;border:1px dashed var(--line);background:rgba(255,255,255,.03);word-break:break-all;font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#ffd9b0;}
+    .secret-box a{color:#7fe8c9;}
+    .links{display:flex;justify-content:space-between;gap:12px;margin-top:14px;}
+    .links a{color:var(--muted);font-size:13.5px;text-decoration:none;}
+    .links a:hover{color:var(--text);}
+    button.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;}
+    button.ghost:hover{box-shadow:none;background:rgba(255,255,255,.05);}
+
+/* ─────────────────────────────────────────────────────────────
+   الثيم الفاتح — صفحات المصادقة كانت غامقة دايمًا مهما اختار
+   المستخدم، لأن الألوان هنا كانت متثبّتة. دلوقتي بتتبع نفس
+   الاختيار المحفوظ زي باقي الموقع.
+   ───────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --void: #f3f4f7;
+  --ink-800: #ffffff;
+  --ink-700: #eceef2;
+  --gold: #bd6c2f;
+  --violet: #2c7a63;
+  --rose: #d13c30;
+  --text: #14171d;
+  --muted: #5b6472;
+  --line: rgba(15, 18, 25, .1);
+  color-scheme: light;
+}
+[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 18% 15%, rgba(44, 122, 99, .10), transparent 22%),
+    radial-gradient(circle at 84% 20%, rgba(189, 108, 47, .10), transparent 20%),
+    linear-gradient(180deg, #f7f8fb 0%, #eef0f5 55%, #f3f4f7 100%);
+}
+[data-theme="light"] .orb { opacity: .28; }
+[data-theme="light"] .card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(248, 249, 252, .98));
+  box-shadow: 0 20px 60px rgba(15, 18, 25, .12), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--line);
+}
+[data-theme="light"] a { color: var(--gold); }
