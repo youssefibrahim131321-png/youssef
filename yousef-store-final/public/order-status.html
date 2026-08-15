@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<script src="/theme.js"></script>
+<script src="/ui-utils.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>حالة الدفع | يوسف</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="تابع حالة طلبك مع متجر يوسف وتعرّف على الخطوة التالية." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    *{box-sizing:border-box;}
+    body{background:linear-gradient(180deg,#07080b 0%,#0d1015 50%,#0b0d10 100%);color:var(--text);font-family:'Tajawal',sans-serif;min-height:100vh;margin:0;display:flex;align-items:center;justify-content:center;padding:20px;}
+    [data-theme="light"] body{background:linear-gradient(180deg,#f6f7f9 0%,#f0f2f5 100%);}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:40px 32px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.35);}
+    .icon{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+    .icon.ok{background:rgba(62,207,142,.14);}
+    .icon.fail{background:rgba(229,72,60,.14);}
+    .icon.unknown{background:rgba(255,106,44,.14);}
+    .icon svg{width:42px;height:42px;}
+    h1{font-size:22px;margin:0 0 8px;font-family:'Cairo',sans-serif;}
+    p{color:var(--muted);margin:0 0 20px;}
+    a.btn{display:inline-block;padding:14px 24px;border-radius:14px;font-weight:800;text-decoration:none;background:linear-gradient(135deg,var(--accent),#ffb15c);color:#160a04;}
+  </style>
+  <meta property="og:title" content="حالة طلبك | متجر يوسف">
+  <meta property="og:description" content="تابع حالة طلبك وتفاصيل التوصيل من متجر يوسف.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <div class="card" id="card">
+    <p>جاري التحقق من حالة الدفع...</p>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    const order = params.get('order');
+    const card = document.getElementById('card');
+    const map = {
+      success: {
+        icon: 'ok',
+        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--emerald)"><path d="M5 12l5 5L19 7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        title: 'تم الدفع بنجاح! ✅',
+        text: order ? `طلبك رقم #${order} جاري تجهيزه.` : 'طلبك جاري تجهيزه.'
+      },
+      failed: {
+        icon: 'fail',
+        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)"><path d="M6 6l12 12M18 6L6 18" stroke-width="2.4" stroke-linecap="round"/></svg>',
+        title: 'فشلت عملية الدفع',
+        text: order ? `الطلب رقم #${order} لم يتم دفعه. جرّب مرة أخرى أو اختر الدفع عند الاستلام.` : 'حاول مرة أخرى أو اختر وسيلة دفع أخرى.'
+      },
+      unknown: {
+        icon: 'unknown',
+        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)"><path d="M12 8v5m0 3h.01" stroke-width="2.4" stroke-linecap="round"/></svg>',
+        title: 'جاري تأكيد حالة الدفع',
+        text: 'هنراجع طلبك وهنبعتلك تحديث. لو اتخصم مبلغ ومحصلش تأكيد خلال دقايق، تواصل معانا.'
+      }
+    };
+    const info = map[status] || map.unknown;
+    const { html, setHTML, trustedHtml } = window.YousefUI;
+    const wa = document.getElementById('trackWa');
+    if (wa && order) wa.href = `https://wa.me/?text=${encodeURIComponent(`السلام عليكم، أتابع طلب رقم #${order}`)}`;
+    setHTML(card, html`
+      <div class="icon ${info.icon}">${trustedHtml(info.svg)}</div>
+      <h1>${info.title}</h1>
+      <p>${info.text}</p>
+      <div class="status-steps"><span class="active">استلام الطلب</span><span>مراجعة الدفع</span><span>التجهيز والتوصيل</span></div>
+      <div class="status-actions"><a class="btn" href="/">الرجوع للمتجر</a><a class="btn secondary" id="trackWa" target="_blank" rel="noopener">تواصل معنا</a></div>
+    `);
+  </script>
+</body>
+</html>

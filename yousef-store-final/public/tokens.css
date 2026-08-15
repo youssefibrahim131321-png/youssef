@@ -1,0 +1,76 @@
+/* ---------------------------------------------------------------------------
+ * توكنز التصميم المشتركة لصفحات الحساب/لوحة العميل/الدفع.
+ * نفس الهوية المبسّطة في theme.css: خلفية بلون واحد فقط، بدون تدرجات
+ * أو تأثيرات ضبابية، ولون تمييز واحد. الملف ده هو المصدر الوحيد للحقيقة،
+ * وبيتكاش في المتصفح وفي الـ service worker.
+ * ------------------------------------------------------------------------- */
+:root {
+  --gold: #e8632c;
+  --gold-2: #f0793f;
+  --accent: #e8632c;
+  --accent-2: #f0793f;
+  --violet: #1f9d8e;
+  --teal: #1f9d8e;
+  --rose: #e5493f;
+  --danger: #e5493f;
+  --emerald: #34c47c;
+  --bg: #101114;
+  --panel: #17191e;
+  --panel-2: #1d1f25;
+  --text: #f0f1f3;
+  --muted: #a2a6b0;
+  --muted-strong: #d3d6e0;
+  --line: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --surface: #17191e;
+  --surface-2: #1d1f25;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  color-scheme: dark;
+}
+
+/* الثيم الأبيض — نفس المتغيرات، قيم فاتحة نظيفة. */
+[data-theme="light"] {
+  --gold: #d9560f;
+  --gold-2: #c34c0d;
+  --accent: #d9560f;
+  --accent-2: #c34c0d;
+  --violet: #1a8a76;
+  --teal: #1a8a76;
+  --rose: #d43a30;
+  --danger: #d43a30;
+  --emerald: #1f9d5f;
+  --bg: #f6f6f7;
+  --panel: #ffffff;
+  --panel-2: #f0f0f2;
+  --text: #17181c;
+  --muted: #565a63;
+  --muted-strong: #262b34;
+  --line: rgba(15, 16, 20, 0.09);
+  --border: rgba(15, 16, 20, 0.09);
+  --surface: #ffffff;
+  --surface-2: #f0f0f2;
+  color-scheme: light;
+}
+
+/* ─── Skeleton / shimmer loading ─── */
+.skeleton {
+  position: relative; overflow: hidden;
+  background: var(--panel-2);
+  border-radius: var(--radius-sm);
+  isolation: isolate;
+}
+.skeleton::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transform: translateX(-100%);
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+[data-theme="light"] .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(15,18,25,0.05), transparent);
+}
+@keyframes skeletonShimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}

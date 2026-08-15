@@ -1,0 +1,11 @@
+node_modules/
+data/
+store-backups/
+.env
+*.log
+INITIAL-ADMIN-PASSWORD.txt
+LAST-ADMIN-RESET-LINK.txt
+data/**
+!data/.gitkeep
+
+CI-REPORT.md

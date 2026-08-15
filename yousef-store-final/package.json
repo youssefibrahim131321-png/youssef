@@ -1,0 +1,39 @@
+{
+  "name": "yousef-store",
+  "version": "1.2.0",
+  "description": "متجر يوسف لمستلزمات العربيات - واجهة المتجر ولوحة تحكم المسؤول",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "admin:reset-password": "node scripts/reset-admin-password.js",
+    "audit:xss": "node tools/xss-audit.js",
+    "ci": "npm run lint && npm run typecheck && npm test",
+    "ci:report": "node tools/ci-report.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "mail:test": "node tools/mail-test.js",
+    "automation:health": "node scripts/automation-health.js",
+    "pretest": "node tools/xss-audit.js",
+    "start": "node server.js",
+    "start:local": "node --env-file=.env server.js",
+    "test": "node --test test/*.test.js",
+    "typecheck": "node --experimental-vm-modules --no-warnings tools/syntax-check.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
+    "pg": "^8.23.0",
+    "sharp": "^0.35.3",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^11.10.0",
+    "eslint": "^9.39.5",
+    "pg-mem": "^3.0.14"
+  }
+}

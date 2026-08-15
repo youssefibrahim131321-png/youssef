@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+# أي push جديد على نفس الفرع بيلغي الرن القديم بدل ما يستهلك runners.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint + Typecheck + Tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck (فحص بناء كل ملفات JS)
+        run: npm run typecheck
+      - name: XSS audit
+        run: node tools/xss-audit.js
+      # الاختبارات بتشتغل على PostgreSQL في الذاكرة (pg-mem) فمفيش أي خدمة
+      # قاعدة بيانات مطلوبة في الـ runner.
+      - name: Tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          CI: 'true'
+          TOTP_ENCRYPTION_KEY: ci-test-encryption-key-not-a-real-secret
+
+  report:
+    name: تقرير الجودة التلقائي
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: توليد التقرير
+        id: report
+        continue-on-error: true
+        run: npm run ci:report
+        env:
+          NODE_ENV: test
+          CI: 'true'
+          TOTP_ENCRYPTION_KEY: ci-test-encryption-key-not-a-real-secret
+      - name: رفع التقرير كـ artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-report
+          path: CI-REPORT.md
+          if-no-files-found: warn
+      - name: نشر/تحديث التقرير كتعليق على الـ PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: ci-report
+          recreate: true
+          path: CI-REPORT.md
+      - name: تثبيت نتيجة الوظيفة على حالة التقرير
+        if: steps.report.outcome == 'failure'
+        run: exit 1
+
+  smoke:
+    name: Smoke (بوت السيرفر فعليًا)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: تشغيل السيرفر والتأكد من /api/health
+        run: |
+          node server.js > /tmp/server.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3999/api/health && exit 0
+            sleep 1
+          done
+          echo "السيرفر مقامش:"; cat /tmp/server.log; exit 1
+        env:
+          NODE_ENV: development
+          PORT: '3999'
+          SESSION_SECRET: ci-session-secret-not-a-real-secret-value
+          TOTP_ENCRYPTION_KEY: ci-test-encryption-key-not-a-real-secret
+          ADMIN_EMAIL: ci@example.com
+          ADMIN_PASSWORD: CiPassw0rd123
+          ALLOW_EPHEMERAL_DATA: '1'
+          ALLOW_MEMORY_DB: '1'
+
+  audit:
+    name: npm audit (prod)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
